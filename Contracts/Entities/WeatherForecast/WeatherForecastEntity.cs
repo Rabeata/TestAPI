@@ -2,10 +2,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Contracts.Entities
+namespace Contracts.Entities.WeatherForecast
 {
     [Table("WeatherForecast")]
-    public class WeatherForecast
+    public class WeatherForecastEntity
     {
         [Key]
         public int Id { get; set; }

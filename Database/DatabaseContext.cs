@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Contracts.Entities;
+﻿
+using Contracts.Entities.WeatherForecast;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database
@@ -16,7 +14,7 @@ namespace Database
         {
 
         }
-        public DbSet<WeatherForecast> WeatherForecast { get; set; }
+        public DbSet<WeatherForecastEntity> WeatherForecast { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

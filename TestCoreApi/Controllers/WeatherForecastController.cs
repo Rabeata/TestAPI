@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts.Entities;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Business.Repositories;
+using Contracts.Entities.WeatherForecast;
+using Contracts.Helpers;
+using Contracts.Mappers;
 using Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,29 +23,38 @@ namespace Api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly DatabaseContext _databaseContext;
+        private readonly IWeatherForecastRepository _weatherForecastRepository;
 
         public WeatherForecastController(
             ILogger<WeatherForecastController> logger,
-            DatabaseContext databaseContext
+            IWeatherForecastRepository weatherForecastRepository
             )
         {
             _logger = logger;
-            _databaseContext = databaseContext;
+            _weatherForecastRepository = weatherForecastRepository;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecastResource>> Get([FromQuery] QueryStringParameters queryParameters)
         {
-            return _databaseContext.WeatherForecast.ToList();
+            var columnsMap = new Dictionary<string, Expression<Func<WeatherForecastResource, object>>>()
+            {
+                ["date"] = v => v.Date,
+                ["id"] = v => v.Id,
+                ["summary"] = v => v.Summary,
+                ["temperatureF"] = v => v.TemperatureF,
+                ["temperatureC"] = v => v.TemperatureC
+            };
+            return await _weatherForecastRepository.ListAsync(queryParameters, columnsMap);
         }
 
         [HttpPost]
-        public WeatherForecast Post([FromBody] WeatherForecast model)
+        public WeatherForecastResource Post([FromBody] WeatherForecastModel model)
         {
-            _databaseContext.WeatherForecast.Add(model);
-            _databaseContext.SaveChanges();
-            return model;
+            var entity = model.MapModelToEntity();
+            _weatherForecastRepository.AddAsync(entity);
+
+            return entity.MapEntityToResult();
         }
     }
 }

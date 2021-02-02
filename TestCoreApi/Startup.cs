@@ -1,4 +1,5 @@
 using System;
+using Business.Repositories;
 using Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,9 @@ namespace Api
             var connectionString = DatabaseSettings.GetConnectionString();
             services.AddDbContext<DatabaseContext>(opts => opts.UseSqlServer(connectionString));
             services.AddControllers();
+
+
+            services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
 
             services.AddSwaggerGen(c =>
             {
